@@ -11,13 +11,15 @@ resources:
     source:
       uri: ((gitrepo.url))
       branch: ((gitrepo.base_branch))
-      private_key: ((gitrepo.private_key))
+      private_key: ((git.private_key))
+      private_key_passphrase: ((git.private_key_passphrase))
   - name: git-repo-fortigate-autoscale-azure-updated
     type: git
     source:
       uri: ((gitrepo.url))
       branch: ((gitrepo.base_branch))
-      private_key: ((gitrepo.private_key))
+      private_key: ((git.private_key))
+      private_key_passphrase: ((git.private_key_passphrase))
   - name: resource-azure-list-fortigate-images-byol
     type: azure-rest-api
     source:
@@ -69,7 +71,7 @@ jobs:
               - |
                 cd git-repo-fortigate-autoscale-azure-updated
                 git fetch ../git-repo-fortigate-autoscale-azure main
-                git checkout ((gitrepo.head_branch)) || git checkout ((gitrepo.base_branch)) -b ((gitrepo.head_branch))
+                git checkout ((gitrepo.update_branch)) || git checkout ((gitrepo.base_branch)) -b ((gitrepo.update_branch))
                 git reset --hard FETCH_HEAD
       - task: npm-install-dependencies
         config:
@@ -109,11 +111,10 @@ jobs:
           outputs:
             - name: git-repo-fortigate-autoscale-azure-updated
           run:
-            path: node
+            path: git-repo-fortigate-autoscale-azure-updated/build/scripts/template-updater.js
             args:
               # first arg is the script to run
               # working directory will be resolved into 'git-repo-fortigate-autoscale-azure-updated'
-              - git-repo-fortigate-autoscale-azure-updated/build/scripts/template-updater.js
               - fortigate-byol=../resource-azure-list-fortigate-images-byol/api-response.json
               - fortigate-payg./resource-azure-list-fortigate-images-payg/api-response.json
               - fortianalyzer-byol./resource-azure-list-fortianalyzer-images-byol/api-response.json
@@ -126,7 +127,7 @@ jobs:
             type: docker-image
             source:
               repository: node
-              tag: 14-buster
+              tag: 14-alpine
           inputs:
             - name: git-repo-fortigate-autoscale-azure-updated
           outputs:
@@ -162,5 +163,5 @@ jobs:
       - put: git-repo-fortigate-autoscale-azure-updated
         params:
           repository: git-repo-fortigate-autoscale-azure-updated
-          branch: ((gitrepo.head_branch))
+          branch: ((gitrepo.update_branch))
           force: true
