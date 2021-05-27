@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
-import { err, JSONable, log } from './lib-concourse';
+import { JSONable, log } from './lib-concourse';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function readJSONTemplate(filePath: string): JSONable {
@@ -167,8 +167,4 @@ function main(): void {
     return;
 }
 
-try {
-    main();
-} catch (ex) {
-    err(ex.message || ex.stack || String(ex));
-}
+main();
