@@ -23,28 +23,28 @@ resources:
   - name: resource-azure-list-fortigate-images-byol
     type: azure-rest-api
     source:
-      client_id: ((azureapi.client_id))
-      client_secret: ((azureapi.client_secret))
-      tenant: ((azureapi.tenant))
-      url: 'https://management.azure.com/subscriptions/((azureapi.subscription))/providers/Microsoft.Compute/locations/((vmimages.location))/publishers/((vmimages.fgt.byol.publisher))/artifacttypes/vmimage/offers/((vmimages.fgt.byol.offer))/skus/((vmimages.fgt.byol.sku))/versions?api-version=2020-12-01'
+      client_id: ((azure-rest-api.client_id))
+      client_secret: ((azure-rest-api.client_secret))
+      tenant: ((azure-rest-api.tenant))
+      url: 'https://management.azure.com/subscriptions/((azure-rest-api.subscription))/providers/Microsoft.Compute/locations/((vmimages.location))/publishers/((vmimages.fgt.byol.publisher))/artifacttypes/vmimage/offers/((vmimages.fgt.byol.offer))/skus/((vmimages.fgt.byol.sku))/versions?api-version=2020-12-01'
   - name: resource-azure-list-fortigate-images-payg
     type: azure-rest-api
     source:
-      client_id: ((azureapi.client_id))
-      client_secret: ((azureapi.client_secret))
-      tenant: ((azureapi.tenant))
-      url: 'https://management.azure.com/subscriptions/((azureapi.subscription))/providers/Microsoft.Compute/locations/((vmimages.location))/publishers/((vmimages.fgt.payg.publisher))/artifacttypes/vmimage/offers/((vmimages.fgt.payg.offer))/skus/((vmimages.fgt.payg.sku))/versions?api-version=2020-12-01'
+      client_id: ((azure-rest-api.client_id))
+      client_secret: ((azure-rest-api.client_secret))
+      tenant: ((azure-rest-api.tenant))
+      url: 'https://management.azure.com/subscriptions/((azure-rest-api.subscription))/providers/Microsoft.Compute/locations/((vmimages.location))/publishers/((vmimages.fgt.payg.publisher))/artifacttypes/vmimage/offers/((vmimages.fgt.payg.offer))/skus/((vmimages.fgt.payg.sku))/versions?api-version=2020-12-01'
   - name: resource-azure-list-fortianalyzer-images-byol
     type: azure-rest-api
     source:
       # from_local_path: ../params/source
-      client_id: ((azureapi.client_id))
-      client_secret: ((azureapi.client_secret))
-      tenant: ((azureapi.tenant))
-      url: 'https://management.azure.com/subscriptions/((azureapi.subscription))/providers/Microsoft.Compute/locations/((vmimages.location))/publishers/((vmimages.faz.byol.publisher))/artifacttypes/vmimage/offers/((vmimages.faz.byol.offer))/skus/((vmimages.faz.byol.sku))/versions?api-version=2020-12-01'
+      client_id: ((azure-rest-api.client_id))
+      client_secret: ((azure-rest-api.client_secret))
+      tenant: ((azure-rest-api.tenant))
+      url: 'https://management.azure.com/subscriptions/((azure-rest-api.subscription))/providers/Microsoft.Compute/locations/((vmimages.location))/publishers/((vmimages.faz.byol.publisher))/artifacttypes/vmimage/offers/((vmimages.faz.byol.offer))/skus/((vmimages.faz.byol.sku))/versions?api-version=2020-12-01'
 
 jobs:
-  - name: demo
+  - name: vmimages-updater
     public: true
     plan:
       - get: git-repo-fortigate-autoscale-azure
@@ -95,6 +95,7 @@ jobs:
                 cd git-repo-fortigate-autoscale-azure-updated
                 npm install
                 npm run build
+                chmod +x build/scripts/template-updater.js
       - task: node-update-azure-template
         config:
           platform: linux
@@ -133,7 +134,7 @@ jobs:
           outputs:
             - name: git-repo-fortigate-autoscale-azure-updated
           run:
-            path: bash
+            path: sh
             args:
               - -c
               - |
